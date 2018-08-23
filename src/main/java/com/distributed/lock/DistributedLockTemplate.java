@@ -13,5 +13,5 @@ public interface DistributedLockTemplate {
      * @param callback 回调函数
      * @return
      */
-    public Object execute(String lockId,int timeout,Callback callback);
+    Object execute(String lockId,int timeout,Callback callback);
 }

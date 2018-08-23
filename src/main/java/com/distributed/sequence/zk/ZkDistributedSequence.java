@@ -49,6 +49,7 @@ public class ZkDistributedSequence implements DistributedSequence {
         return baseSleepTimeMs;
     }
 
+    @Override
     public Long sequence(String sequenceName) {
         try {
             int value=client.setData().withVersion(-1).forPath("/"+sequenceName,"".getBytes()).getVersion();

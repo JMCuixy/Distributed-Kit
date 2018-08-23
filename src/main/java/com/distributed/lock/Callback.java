@@ -5,7 +5,17 @@ package com.distributed.lock;
  */
 public interface Callback {
 
-    public Object onGetLock() throws InterruptedException;
+    /**
+     * 得到锁的回调函数
+     * @return
+     * @throws InterruptedException
+     */
+    Object onGetLock() throws InterruptedException;
 
-    public Object onTimeout() throws InterruptedException;
+    /**
+     * 未获得锁超时回调函数
+     * @return
+     * @throws InterruptedException
+     */
+    Object onTimeout() throws InterruptedException;
 }

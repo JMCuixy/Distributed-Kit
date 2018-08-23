@@ -37,6 +37,7 @@ public class RedisReentrantLockTemplateTest {
                     }
                     final int sleepTime=ThreadLocalRandom.current().nextInt(5)*1000;
                     template.execute("test",5000, new Callback() {
+                        @Override
                         public Object onGetLock() throws InterruptedException {
                             System.out.println(Thread.currentThread().getName() + ":getLock");
                             Thread.currentThread().sleep(sleepTime);
@@ -44,6 +45,7 @@ public class RedisReentrantLockTemplateTest {
                             endDownLatch.countDown();
                             return null;
                         }
+                        @Override
                         public Object onTimeout() throws InterruptedException {
                             System.out.println(Thread.currentThread().getName() + ":timeout");
                             endDownLatch.countDown();

@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
  * Created by sunyujia@aliyun.com on 2016/2/26.
  */
 public class ZkDistributedLockTemplate implements DistributedLockTemplate {
+
     private static final org.slf4j.Logger log = LoggerFactory.getLogger(ZkDistributedLockTemplate.class);
 
     private CuratorFramework client;
@@ -21,32 +22,32 @@ public class ZkDistributedLockTemplate implements DistributedLockTemplate {
     }
 
 
-
-    private boolean tryLock(ZkReentrantLock distributedReentrantLock,Long timeout) throws Exception {
-        return distributedReentrantLock.tryLock(timeout, TimeUnit.MILLISECONDS);
-    }
-
+    @Override
     public Object execute(String lockId, int timeout, Callback callback) {
         ZkReentrantLock distributedReentrantLock = null;
-        boolean getLock=false;
+        boolean getLock = false;
         try {
-            distributedReentrantLock = new ZkReentrantLock(client,lockId);
-            if(tryLock(distributedReentrantLock,new Long(timeout))){
-                getLock=true;
+            distributedReentrantLock = new ZkReentrantLock(client, lockId);
+            if (tryLock(distributedReentrantLock, new Long(timeout))) {
+                getLock = true;
                 return callback.onGetLock();
-            }else{
+            } else {
                 return callback.onTimeout();
             }
-        }catch(InterruptedException ex){
+        } catch (InterruptedException ex) {
             log.error(ex.getMessage(), ex);
             Thread.currentThread().interrupt();
-        }catch (Exception e) {
+        } catch (Exception e) {
             log.error(e.getMessage(), e);
-        }finally {
-            if(getLock){
+        } finally {
+            if (getLock) {
                 distributedReentrantLock.unlock();
             }
         }
         return null;
+    }
+
+    private boolean tryLock(ZkReentrantLock distributedReentrantLock, Long timeout) throws Exception {
+        return distributedReentrantLock.tryLock(timeout, TimeUnit.MILLISECONDS);
     }
 }

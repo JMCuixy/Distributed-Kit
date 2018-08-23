@@ -38,6 +38,7 @@ public class ZkReentrantLockTemplateTest {
                     }
                     final int sleepTime=ThreadLocalRandom.current().nextInt(5)*1000;
                     template.execute("test",5000, new Callback() {
+                        @Override
                         public Object onGetLock() throws InterruptedException {
                             System.out.println(Thread.currentThread().getName() + ":getLock");
                             Thread.currentThread().sleep(sleepTime);
@@ -45,6 +46,7 @@ public class ZkReentrantLockTemplateTest {
                             endDownLatch.countDown();
                             return null;
                         }
+                        @Override
                         public Object onTimeout() throws InterruptedException {
                             System.out.println(Thread.currentThread().getName() + ":timeout");
                             endDownLatch.countDown();
@@ -62,20 +64,31 @@ public static void main(String[] args){
     RetryPolicy retryPolicy = new ExponentialBackoffRetry(1000, 3);
     CuratorFramework client = CuratorFrameworkFactory.newClient("127.0.0.1:2181", retryPolicy);
     client.start();
-
     final ZkDistributedLockTemplate template=new ZkDistributedLockTemplate(client);//本类多线程安全,可通过spring注入
-    template.execute("订单流水号", 5000, new Callback() {
-        @Override
-        public Object onGetLock() throws InterruptedException {
-            //TODO 获得锁后要做的事
-            return null;
-        }
 
-        @Override
-        public Object onTimeout() throws InterruptedException {
-            //TODO 获得锁超时后要做的事
-            return null;
-        }
-    });
+
+    for (int i=0; i< 100
+            ; i++){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                template.execute("订单流水号" , 5000, new Callback() {
+                    @Override
+                    public Object onGetLock() throws InterruptedException {
+                        System.out.println("正在处理业务逻辑");
+                        return null;
+                    }
+
+                    @Override
+                    public Object onTimeout() throws InterruptedException {
+                        System.out.println("超时五秒啦~~~");
+                        return null;
+                    }
+                });
+            }
+        }).start();
+    }
+
+
 }
 }

@@ -3,8 +3,6 @@ package com.distributed.limit.redis;
 import org.slf4j.LoggerFactory;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
-import redis.clients.jedis.exceptions.JedisConnectionException;
-import redis.clients.jedis.exceptions.JedisException;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -61,8 +59,7 @@ public class AccessSpeedLimit {
     public boolean tryAccess(String key,LimitRule limitRule){
         String newKey="Limit:"+key;
         Jedis jedis = null;
-        boolean broken = false;
-        long count=-1;
+        long count;
         try {
             jedis = jedisPool.getResource();
             List<String> keys = new ArrayList<String>();

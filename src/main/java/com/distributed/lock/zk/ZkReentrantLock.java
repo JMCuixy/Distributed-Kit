@@ -67,7 +67,7 @@ public class ZkReentrantLock implements DistributedReentrantLock {
     @Override
     public boolean tryLock(long timeout, TimeUnit unit) throws InterruptedException {
         try {
-            return interProcessMutex.acquire(timeout, unit);
+            return interProcessMutex.acquire(timeout, unit); //用户获取锁
         } catch (InterruptedException e) {
             throw e;
         } catch (Exception e) {
@@ -79,7 +79,7 @@ public class ZkReentrantLock implements DistributedReentrantLock {
     @Override
     public void unlock() {
         try {
-            interProcessMutex.release();
+            interProcessMutex.release(); //用户释放锁
         } catch (Throwable e) {
             log.error(e.getMessage(), e);
         } finally {
@@ -96,6 +96,7 @@ public class ZkReentrantLock implements DistributedReentrantLock {
             this.path = path;
         }
 
+        @Override
         public void run() {
             try {
                 List list = client.getChildren().forPath(path);
